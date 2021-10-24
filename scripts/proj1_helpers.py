@@ -11,9 +11,9 @@ def load_csv_data(data_path, sub_sample=False):
     ids = x[:, 0].astype(np.int)
     input_data = x[:, 2:]
 
-    # convert class labels from strings to binary (-1,1)
+    # convert class labels from strings to binary (0,1)
     yb = np.ones(len(y))
-    yb[np.where(y=='b')] = -1
+    yb[np.where(y=='b')] = 0
     
     # sub-sample
     if sub_sample:
@@ -24,12 +24,16 @@ def load_csv_data(data_path, sub_sample=False):
     return yb, input_data, ids
 
 
-def predict_labels(weights, data):
+def predict_labels(weights, data, competition=False):
     """Generates class predictions given weights, and a test data matrix"""
-    y_pred = np.dot(data, weights)
-    y_pred[np.where(y_pred <= 0)] = -1
-    y_pred[np.where(y_pred > 0)] = 1
     
+    negative_class = 0
+    if(competition):
+        negative_class = -1
+    
+    y_pred = np.dot(data, weights)
+    y_pred[np.where(y_pred <= 0)] = negative_class
+    y_pred[np.where(y_pred > 0)] = 1
     return y_pred
 
 
