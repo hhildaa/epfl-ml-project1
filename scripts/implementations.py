@@ -26,6 +26,52 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
+def compute_loss(y, tx, w, type="mse"):
+    """Calculate the loss using mse."""
+    N = y.shape[0]
+    fw = np.matmul(tx,w)
+    if type=="mse":
+        return (1/(2*N)*np.matmul(y-fw,(y-fw).T))
+    if type=="mae":
+        return (1/N*np.sum(np.abs(y-fw)))
+
+def compute_gradient(y, tx, w):
+    """Compute the gradient."""
+    N=y.size
+    e=y-np.matmul(tx,w)
+    return(-1/N*np.matmul(tx.T,e))
+
+def compute_stoch_gradient(y, tx, w):
+    """Compute a stochastic gradient from just few examples n and their corresponding y_n labels."""
+    N=y.size
+    e=y-np.matmul(tx,w)
+    return(-1/N*np.matmul(tx.T,e))
+
+def least_squares_GD(y, tx, initial_w, max_iters, gamma):
+    """Linear regression using gradient descent"""
+    w = initial_w
+    w = initial_w
+    for n_iter in range(max_iters):
+        gr=compute_gradient(y,tx,w)
+        loss=(compute_loss(y,tx,w))
+        w=w-gamma*gr
+#        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+#              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+    return (w, loss)
+
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
+    """Linear regression using stochastic gradient descent"""
+    batch_size = 1
+    w = initial_w
+    for n_iter in range(max_iters):
+        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
+            gr=compute_stoch_gradient(minibatch_y,minibatch_tx,w)
+            w=w-gamma*gr
+        loss=compute_loss(y,tx, w)
+            
+#        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+#              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+    return (w, loss)
             
 def sigmoid(z):
     return 1.0 / (1 + np.exp(-z))
@@ -58,6 +104,7 @@ def regularized_cross_entropy_gradient(y, tx, w, lambda_):
 
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma, batch_size=1):
+    """Logistic regression using gradient descent or SGD"""
     w = initial_w
     for n_iter in range(max_iters):
         for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
@@ -72,6 +119,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, batch_size=1):
 
 
 def reg_logistic_regression(y, tx, lambda_ , initial_w, max_iters, gamma, batch_size=1):
+    """Regularized logistic regression using gradient descent or SGD"""
     w = initial_w
     for n_iter in range(max_iters):
         for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
