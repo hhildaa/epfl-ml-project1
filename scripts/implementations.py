@@ -27,7 +27,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
 def compute_loss(y, tx, w, type="mse"):
-    """Calculate the loss using mse."""
+    """Calculate the loss using mse or mae."""
     N = y.shape[0]
     fw = np.matmul(tx,w)
     if type=="mse":
