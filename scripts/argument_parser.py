@@ -5,9 +5,9 @@ import argparse
 default_params = {
         'seed': 44,
         'algorithm': 'reg_logistic',
-        'max_iters': 5000,
-        'gamma': 1e-5,
-        'batch_size': 100,
+        'max_iters': 100,
+        'gamma': 1e-4,
+        'batch_size': 1000,
         'k_folds': 10,
         'output_file': 'predictions'
     }
@@ -36,10 +36,10 @@ def parse_arguments():
     )
 
     parser.add_argument(
-        '--outliers', action='store_true', help='Filter outliers', default=False
+        '--remove_outliers', action='store_true', help='Filter outliers', default=False
     )
     parser.add_argument(
-        '--median_imputing', action='store_true', help='Median imputing for unknown values', default=False
+        '--impute_median', action='store_true', help='Median imputing for unknown values', default=False
     )
     parser.add_argument(
         '--feature_expansion', action='store_true', help='Median imputing for unknown values', default=False
@@ -57,7 +57,7 @@ def parse_arguments():
         help='Number of fold in cross validation'
     )
     parser.add_argument(
-        '--max_iterations', type=int,
+        '--max_iters', type=int,
         help='Maximum number of iterations of the (stohastic) gradient descent algorithm'
     )
     parser.add_argument(

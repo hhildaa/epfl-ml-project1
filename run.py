@@ -1,20 +1,13 @@
-import os
-os.sys.path.append('./scripts')
-os.sys.path.append('./model')
-os.sys.path.append('./dataprocess')
-os.sys.path.append('./visualization')
-
-%matplotlib inline
 import numpy as np
 import matplotlib.pyplot as plt
 
-from implementations import *
+from scripts.implementations import *
 
-from process import *
-from cross_validation import *
+from dataprocess.process import *
+from model.cross_validation import *
 
-from proj1_helpers import *
-from argument_parser import *
+from scripts.proj1_helpers import *
+from scripts.argument_parser import *
 
 
 
@@ -34,6 +27,9 @@ def main(**params):
     DATA_TEST_PATH = './data/test.csv'
     _, X_test, ids_test = load_csv_data(DATA_TEST_PATH)
 
+    if(params['verbose']):
+            print("DATA READ")
+
 
     feature_list = ["DER_mass_MMC", "DER_mass_transverse_met_lep", "DER_mass_vis", "DER_pt_h", "DER_deltaeta_jet_jet", "DER_mass_jet_jet",
                     "DER_prodeta_jet_jet", "DER_deltar_tau_lep", "DER_pt_tot", "DER_sum_pt", "DER_pt_ratio_lep_tau", "DER_met_phi_centrality",
@@ -51,7 +47,7 @@ def main(**params):
     # Without splitting on JET
     data_splits_train = {-1:(X_train, y_train, ids_train)}
     data_splits_train_whole = {-1:(X_train_whole, y_train_whole, ids_train_whole)}
-    data_splits_test = {-1:(X_test, y_test, ids_test)}
+    data_splits_test = {-1:(X_test, None, ids_test)}
 
     # With splitting on JET
     if(params['split_jet']):
@@ -60,13 +56,16 @@ def main(**params):
         data_splits_test = split_data_by_feature(None, X_test, ids_test, feature_ids["PRI_jet_num"], train=False)
 
 
+    if(params['verbose']):
+            print("CROSS VALIDATION FOR PARAMETER ESTIMATION")
+
 
     best_degrees = {}
     best_lambdas = {}
 
     # Cross validation
     for jet in data_splits_train:
-        X_train_jet, y_train_jet, _, _ = data_splits_train[jet]
+        X_train_jet, y_train_jet, _ = data_splits_train[jet]
         
         if(params['verbose']):
             print(f"JET NUMBER {int(jet)}:")     
@@ -91,7 +90,10 @@ def main(**params):
 
 ######################################################################################################################
 
-    # Data preprocessing for whole training dataset and testing dataset
+    # Data preprocessing of the whole training dataset and testing dataset
+
+    if(params['verbose']):
+        print("DATA PREPROCESSING OF THE WHOLE TRAINING DATASET AND TESTING DATASET")
 
     for jet in data_splits_train_whole:
         X_train_whole_jet, y_train_whole_jet, ids_train_whole_jet = data_splits_train_whole[jet]
@@ -110,16 +112,13 @@ def main(**params):
 
         # Imputing median
         if(params['impute_median']):
-            # TODO !!!!!
-            """
             X_train_whole_jet, median = impute_median(X_train_whole_jet, None)
-            X_test_jet, _, _ = impute_median(X_test_jet, median)
-            """
+            X_test_jet, _ = impute_median(X_test_jet, median)
 
         # Remove outliers
         if(params['remove_outliers']):
-            # TODO !!!!!
-            pass
+            X_train_whole_jet, upper_quart, lower_quart = bound_outliers(X_train_whole_jet, None, None)
+            X_test_jet, _, _ = bound_outliers(X_test_jet, upper_quart, lower_quart)
 
         # Feature expansion
         if(params['feature_expansion']):
@@ -139,7 +138,9 @@ def main(**params):
     
     # Cross validation on the whole training dataset (for the purpose of report)
 
-   
+    if(params['verbose']):
+        print("CROSS VALIDATION ON THE WHOLE TRAINING DATASET (FOR THE PURPOSE OF REPORT)")
+
     all_preds = {}
     all_labels = {}
     for jet in data_splits_train_whole:
@@ -156,7 +157,7 @@ def main(**params):
                                                          algorithm=params['algorithm'],
                                                          params=params)
         all_preds[jet] = preds
-        all_labels = labels
+        all_labels[jet] = labels
 
 
     accs_test_whole = np.zeros(params['k_folds'])
@@ -171,12 +172,15 @@ def main(**params):
         fold_labels = np.concatenate(fold_labels, axis=0)
         accs_test_whole[k] = accuracy(fold_preds, fold_labels)
 
-    print(f"FINAL Test (on the whole dataset): {accs_test_whole.mean():.4f} +- {acc_test_whole.std():.4f}")
+    print(f"FINAL Test (on the whole dataset): {accs_test_whole.mean():.4f} +- {accs_test_whole.std():.4f}")
 
 
 ######################################################################################################################
 
     # Training on the whole dataset (for the purpose of submission)
+
+    if(params['verbose']):
+        print("TRAINING ON THE WHOLE DATASET (FOR THE PURPOSE OF SUBMISSION)")
 
     weights = {}
 
@@ -186,40 +190,40 @@ def main(**params):
         X_train_whole_jet, y_train_whole_jet, _ = data_splits_train_whole[jet]
                 
         
-        w0 = np.zeros(X_train.shape[1])
+        w0 = np.zeros(X_train_whole_jet.shape[1])
         w, loss = None, None
 
-        if(algorithm == 'reg_logistic'):
+        if(params['algorithm'] == 'reg_logistic'):
             w, loss = reg_logistic_regression(y=y_train_whole_jet, 
                                               tx=X_train_whole_jet, 
                                               lambda_=best_lambdas[jet], 
                                               initial_w=w0, 
-                                              max_iters=max_iters, 
-                                              gamma=gamma, 
-                                              batch_size=batch_size)
+                                              max_iters=params['max_iters'], 
+                                              gamma=params['gamma'], 
+                                              batch_size=params['batch_size'])
 
-        if(algorithm == 'logistic'):
+        if(params['algorithm'] == 'logistic'):
             w, loss = logistic_regression(y=y_train_whole_jet, 
                                           tx=X_train_whole_jet, 
                                           initial_w=w0, 
-                                          max_iters=max_iters, 
-                                          gamma=gamma, 
-                                          batch_size=batch_size)
+                                          max_iters=params['max_iters'], 
+                                          gamma=params['gamma'], 
+                                          batch_size=params['batch_size'])
 
-        if(algorithm == 'least_squares_GD'):
+        if(params['algorithm'] == 'least_squares_GD'):
             w, loss = least_squares_GD(y=y_train_whole_jet, 
                                        tx=X_train_whole_jet,  
                                        initial_w=w0, 
-                                       max_iters=max_iters, 
-                                       gamma=gamma)
+                                       max_iters=params['max_iters'], 
+                                       gamma=params['gamma'])
 
 
-        if(algorithm == 'least_squares_SGD'):
+        if(params['algorithm'] == 'least_squares_SGD'):
             w, loss = least_squares_SGD(y=y_train_whole_jet, 
                                         tx=X_train_whole_jet,  
                                         initial_w=w0, 
-                                        max_iters=max_iters, 
-                                        gamma=gamma)
+                                        max_iters=params['max_iters'], 
+                                        gamma=params['gamma'])
         
 
         weights[jet] = w
@@ -238,13 +242,16 @@ def main(**params):
     all_labels = np.concatenate(all_labels, axis=0)
     acc_train_whole = accuracy(all_preds, all_labels)
     if(params['verbose']):
-        print(f"TOGETHER: Train accuracy on train data: {acc_train_whole:.4f}")
+        print(f"Train accuracy on the whole train data: {acc_train_whole:.4f}")
 
-
-
+    
 ######################################################################################################################
 
-    # Testing and making predictions
+    # Making predictions on test data
+
+    if(params['verbose']):
+        print("MAKING PREDICTIONS ON TEST DATA")
+
 
     all_preds = []
     all_ids = []
@@ -258,8 +265,12 @@ def main(**params):
     all_preds = np.concatenate(all_preds, axis=0)
     all_ids = np.concatenate(all_ids, axis=0)
 
-    OUTPUT_PATH = f'./predictions/{params['output_file']}.csv'
+    OUTPUT_PATH = f"./predictions/{params['output_file']}.csv"
     create_csv_submission(all_ids, all_preds, OUTPUT_PATH)
+
+
+
+
 
 
 if __name__ == '__main__':

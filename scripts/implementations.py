@@ -49,7 +49,6 @@ def compute_stoch_gradient(y, tx, w):
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Linear regression using gradient descent"""
     w = initial_w
-    w = initial_w
     for n_iter in range(max_iters):
         gr=compute_gradient(y,tx,w)
         loss=(compute_loss(y,tx,w))
@@ -72,19 +71,6 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
 #              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return (w, loss)
 
-def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
-    #linear regression using gradient descent
-    batch_size = 1
-    w = initial_w
-    for n_iter in range(max_iters):
-        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
-            gr=compute_stoch_gradient(minibatch_y,minibatch_tx,w)
-            w=w-gamma*gr
-        loss=compute_loss(y,tx, w)
-            
-        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
-    return (w, loss)
 
 def ridge_regression(y, tx, lambda_):
     """implement ridge regression."""

@@ -50,3 +50,43 @@ def remove_outliers(X, y, custom_range=None):
     
     return X, y
 
+def bound_outliers(X, upper_quart=None, lower_quart=None):
+    """
+    Bound outliers, i.e. rows with values that are farther than 1.5 IQR
+    from Lower/Upper quartile, to this quartile
+    """
+    if upper_quart is None:
+        upper_quart = np.quantile(X, .75, axis=0)
+    if lower_quart is None:
+        lower_quart = np.quantile(X, .25, axis=0)
+    IQR = upper_quart - lower_quart
+    
+    lower_bound = lower_quart - 1.5*IQR
+    upper_bound = upper_quart + 1.5*IQR
+    
+    for i in range(X.shape[1]):
+        too_low = (X[:,i] < lower_bound[i])
+        X[too_low,i] = lower_bound[i]
+        
+        too_high = (X[:,i] > upper_bound[i])
+        X[too_high,i] = upper_bound[i]
+    
+    return X, upper_quart, lower_quart
+
+def impute_median(X, train_medians=None, nan_val=-999):
+    """
+        Replace nan_val by median in X
+        Custom medians to use same median for training and testing can be 
+        put into train_medians (otherwise use col medians of X)
+        
+        Returns X (median-imputed) and train_medians
+    """
+    if train_medians is None:
+        train_medians = list()
+        for i in range(X.shape[1]):
+            missing_vals = (X[:,i] != nan_val)
+            train_medians.append(np.median(X[missing_vals,i]))
+    for i in range(X.shape[1]):
+        missing_vals = (X[:,i] == nan_val)
+        X[missing_vals,i] = train_medians[i] 
+    return X, train_medians

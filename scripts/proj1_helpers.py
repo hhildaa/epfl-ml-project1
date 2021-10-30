@@ -4,6 +4,7 @@ import csv
 import numpy as np
 
 
+
 def load_csv_data(data_path, sub_sample=False):
     """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
     y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=1)
@@ -54,9 +55,15 @@ def create_csv_submission(ids, y_pred, name):
 def accuracy(y_pred, y_true):
     return np.sum(y_pred == y_true) / len(y_true)
 
-def standardize(X):
-    X = (X - np.mean(X, axis=0)) / (np.std(X, axis=0) + 1e-20)
-    return X
+def standardize(X, mean=None, std=None):
+    if mean is None:
+        mean = np.mean(X, axis=0)
+
+    if std is None:
+        std = np.std(X, axis=0)
+    
+    X = (X - mean) / (std + 1e-20)
+    return X, mean, std
 
 def build_poly(X, degree):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
@@ -69,15 +76,12 @@ def build_poly(X, degree):
     X_poly.append(np.ones((X.shape[0], 1)))
     X_poly = np.concatenate(X_poly, axis=1)
     
-    
-    """
-    IT SEEMS THAT CURRENTLY SIN/COS FEATURES HARM PERFORMANCE
-    
+
     # add sin and cos to basis
     X_sin = np.sin(X)
     X_cos = np.cos(X)
     X_poly = np.concatenate((X_poly, X_sin, X_cos), axis=1)
-    """
+    
     
     """
     # cross terms of second degree
@@ -94,14 +98,6 @@ def build_poly(X, degree):
     
     return X_poly
 
-def build_k_indices(y, k_fold):
-    """build k indices for k-fold."""
-    num_row = y.shape[0]
-    interval = int(num_row / k_fold)
-    indices = np.random.permutation(num_row)
-    k_indices = [indices[k * interval: (k + 1) * interval]
-                    for k in range(k_fold)]
-    return np.array(k_indices)
 
 def split_data_by_feature(y, X, ids, feature_id, train=True):
     unique_values = np.unique(X[:, feature_id])
