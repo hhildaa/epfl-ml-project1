@@ -7,7 +7,7 @@ default_params = {
         'algorithm': 'reg_logistic',
         'max_iters': 100,
         'gamma': 1e-4,
-        'batch_size': 1000,
+        'batch_size': 100,
         'k_folds': 10,
         'output_file': 'predictions'
     }

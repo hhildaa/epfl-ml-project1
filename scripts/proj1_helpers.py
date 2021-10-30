@@ -16,6 +16,7 @@ def load_csv_data(data_path, sub_sample=False):
     yb = np.ones(len(y))
     yb[np.where(y=='b')] = 0
     
+
     # sub-sample
     if sub_sample:
         yb = yb[::50]
@@ -70,10 +71,9 @@ def build_poly(X, degree):
     
     d = X.shape[1]
     X_poly = []
-    for i in range(0, degree + 1):
-        X_poly.append(X ** (i + 1))
+    for i in range(1, degree + 1):
+        X_poly.append(X ** i)
         
-    X_poly.append(np.ones((X.shape[0], 1)))
     X_poly = np.concatenate(X_poly, axis=1)
     
 
@@ -108,8 +108,7 @@ def split_data_by_feature(y, X, ids, feature_id, train=True):
         y_cur = None
         if(train):
             y_cur = y[np.where(X[:, feature_id] == value)]
-        else:
-            y_cur = ids[np.where(X[:, feature_id] == value)]
+
         ids_cur = ids[np.where(X[:, feature_id] == value)]
         splits[value] = (X_cur, y_cur, ids_cur)
         

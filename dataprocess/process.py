@@ -13,7 +13,7 @@ def remove_tiny_features(X, threshold=1):
     
     for i in range(d):
         unique_values = np.unique(X[:, i])
-        if(len(unique_values) <=threshold):
+        if(len(unique_values) <= threshold):
             remove_features.append(i)
 
     X_cleaned = np.delete(X, remove_features, axis=1)

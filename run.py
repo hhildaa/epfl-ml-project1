@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -39,7 +41,7 @@ def main(**params):
     feature_ids = {feature:i for i, feature in enumerate(feature_list)}
 
 
-    # TODO: REMOVING FEATURES OF TRAINING DATA FOR CROSS VALIDATIO
+    # TODO: REMOVING FEATURES OF TRAINING DATA FOR CROSS VALIDATION
     #       - BE CAREFUL THAT AFTER SPLITTING ON JET, INDICES OF FEATURES CHANGE
 
 
@@ -86,53 +88,9 @@ def main(**params):
             print(f"Best accuracy for JET {int(jet)}: {best_accuracy}")
 
 
-
-
-######################################################################################################################
-
-    # Data preprocessing of the whole training dataset and testing dataset
-
-    if(params['verbose']):
-        print("DATA PREPROCESSING OF THE WHOLE TRAINING DATASET AND TESTING DATASET")
-
-    for jet in data_splits_train_whole:
-        X_train_whole_jet, y_train_whole_jet, ids_train_whole_jet = data_splits_train_whole[jet]
-        X_test_jet, y_test_jet, ids_jet = data_splits_test[jet]
-
-
-
-        # TODO: REMOVING FEATURES - BE CAREFUL THAT AFTER SPLITTING ON JET, INDICES OF FEATURES CHANGE
-
-
-        # Remove degenerated features
-        X_train_whole_jet, removed_features_jet = remove_tiny_features(X_train_whole_jet)
-        X_test_jet = remove_custom_features(X_test_jet, custom_feature_ids=removed_features_jet)
-            
-
-
-        # Imputing median
-        if(params['impute_median']):
-            X_train_whole_jet, median = impute_median(X_train_whole_jet, None)
-            X_test_jet, _ = impute_median(X_test_jet, median)
-
-        # Remove outliers
-        if(params['remove_outliers']):
-            X_train_whole_jet, upper_quart, lower_quart = bound_outliers(X_train_whole_jet, None, None)
-            X_test_jet, _, _ = bound_outliers(X_test_jet, upper_quart, lower_quart)
-
-        # Feature expansion
-        if(params['feature_expansion']):
-            X_train_whole_jet = build_poly(X_train_whole_jet, best_degrees[jet])
-            X_test_jet = build_poly(X_test_jet, best_degrees[jet])
-
-        # Standardize features
-        X_train_whole_jet, mean, std = standardize(X_train_whole_jet, None, None)
-        X_test_jet, _, _ = standardize(X_test_jet, mean, std)
-
-        # Save cleaned data
-        data_splits_train_whole[jet] = (X_train_whole_jet, y_train_whole_jet, ids_train_whole_jet) 
-        data_splits_test[jet] = (X_test_jet, y_test_jet, ids_jet) 
-
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Current Time: ", current_time)
 
 ######################################################################################################################
     
@@ -175,6 +133,82 @@ def main(**params):
     print(f"FINAL Test (on the whole dataset): {accs_test_whole.mean():.4f} +- {accs_test_whole.std():.4f}")
 
 
+
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Current Time: ", current_time)
+
+
+######################################################################################################################
+
+    # Data preprocessing of the whole training dataset and testing dataset
+
+
+    # Without splitting on JET
+    data_splits_train_whole = {-1:(X_train_whole, y_train_whole, ids_train_whole)}
+    data_splits_test = {-1:(X_test, None, ids_test)}
+
+    # With splitting on JET
+    if(params['split_jet']):
+        data_splits_train_whole = split_data_by_feature(y_train_whole, X_train_whole, ids_train_whole, feature_ids["PRI_jet_num"], train=True)
+        data_splits_test = split_data_by_feature(None, X_test, ids_test, feature_ids["PRI_jet_num"], train=False)
+
+
+
+    if(params['verbose']):
+        print("DATA PREPROCESSING OF THE WHOLE TRAINING DATASET AND TESTING DATASET")
+
+    for jet in data_splits_train_whole:
+        X_train_whole_jet, y_train_whole_jet, ids_train_whole_jet = data_splits_train_whole[jet]
+        X_test_jet, y_test_jet, ids_jet = data_splits_test[jet]
+
+
+
+        # TODO: REMOVING FEATURES - BE CAREFUL THAT AFTER SPLITTING ON JET, INDICES OF FEATURES CHANGE
+
+
+        # Remove degenerated features
+        X_train_whole_jet, removed_features_jet = remove_tiny_features(X_train_whole_jet)
+        X_test_jet = remove_custom_features(X_test_jet, custom_feature_ids=removed_features_jet)
+            
+
+
+        # Imputing median
+        if(params['impute_median']):
+            X_train_whole_jet, median = impute_median(X_train_whole_jet, None)
+            X_test_jet, _ = impute_median(X_test_jet, median)
+
+        # Remove outliers
+        if(params['remove_outliers']):
+            X_train_whole_jet, upper_quart, lower_quart = bound_outliers(X_train_whole_jet, None, None)
+            X_test_jet, _, _ = bound_outliers(X_test_jet, upper_quart, lower_quart)
+
+        # Feature expansion
+        if(params['feature_expansion']):
+            X_train_whole_jet = build_poly(X_train_whole_jet, best_degrees[jet])
+            X_test_jet = build_poly(X_test_jet, best_degrees[jet])
+
+        # Standardize features
+        X_train_whole_jet, mean, std = standardize(X_train_whole_jet, None, None)
+        X_test_jet, _, _ = standardize(X_test_jet, mean, std)
+
+        # Add bias
+        bias_train = np.ones((X_train_whole_jet.shape[0], 1))
+        X_train_whole_jet = np.concatenate((X_train_whole_jet, bias_train), axis=1)
+
+        bias_test = np.ones((X_test_jet.shape[0], 1))
+        X_test_jet = np.concatenate((X_test_jet, bias_test), axis=1)
+
+        # Save cleaned data
+        data_splits_train_whole[jet] = (X_train_whole_jet, y_train_whole_jet, ids_train_whole_jet) 
+        data_splits_test[jet] = (X_test_jet, y_test_jet, ids_jet) 
+
+
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Current Time: ", current_time)
+
+
 ######################################################################################################################
 
     # Training on the whole dataset (for the purpose of submission)
@@ -186,10 +220,10 @@ def main(**params):
 
     all_preds = []
     all_labels = []
-    for jet in data_splits_train_whole.keys():
+    for jet in data_splits_train_whole:
         X_train_whole_jet, y_train_whole_jet, _ = data_splits_train_whole[jet]
-                
         
+        num_batches = max(1, int(X_train_whole_jet.shape[0] / params['batch_size']))
         w0 = np.zeros(X_train_whole_jet.shape[1])
         w, loss = None, None
 
@@ -200,7 +234,8 @@ def main(**params):
                                               initial_w=w0, 
                                               max_iters=params['max_iters'], 
                                               gamma=params['gamma'], 
-                                              batch_size=params['batch_size'])
+                                              batch_size=params['batch_size'],
+                                              num_batches=num_batches)
 
         if(params['algorithm'] == 'logistic'):
             w, loss = logistic_regression(y=y_train_whole_jet, 
@@ -208,7 +243,8 @@ def main(**params):
                                           initial_w=w0, 
                                           max_iters=params['max_iters'], 
                                           gamma=params['gamma'], 
-                                          batch_size=params['batch_size'])
+                                          batch_size=params['batch_size'],
+                                          num_batches=num_batches)
 
         if(params['algorithm'] == 'least_squares_GD'):
             w, loss = least_squares_GD(y=y_train_whole_jet, 
@@ -245,6 +281,11 @@ def main(**params):
         print(f"Train accuracy on the whole train data: {acc_train_whole:.4f}")
 
     
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Current Time: ", current_time)
+
+
 ######################################################################################################################
 
     # Making predictions on test data

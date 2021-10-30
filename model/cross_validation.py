@@ -44,9 +44,18 @@ def cross_validation(y, X, k_indices, k, degree, gamma, lambda_, max_iters, batc
     # Standardize features
     X_train, mean, std = standardize(X_train, None, None)
     X_test, _, _ = standardize(X_test, mean, std)
+
+
+    # Add bias
+    bias_train = np.ones((X_train.shape[0], 1))
+    X_train = np.concatenate((X_train, bias_train), axis=1)
+
+    bias_test = np.ones((X_test.shape[0], 1))
+    X_test = np.concatenate((X_test, bias_test), axis=1)    
     
 
 
+    num_batches = max(1, int(X_train.shape[0] / batch_size))
     w0 = np.zeros(X_train.shape[1])
     w, loss = None, None
 
@@ -57,7 +66,8 @@ def cross_validation(y, X, k_indices, k, degree, gamma, lambda_, max_iters, batc
                                           initial_w=w0, 
                                           max_iters=max_iters, 
                                           gamma=gamma, 
-                                          batch_size=batch_size)
+                                          batch_size=batch_size,
+                                          num_batches=num_batches)
 
     if(algorithm == 'logistic'):
         w, loss = logistic_regression(y=y_train, 
@@ -65,7 +75,8 @@ def cross_validation(y, X, k_indices, k, degree, gamma, lambda_, max_iters, batc
                                       initial_w=w0, 
                                       max_iters=max_iters, 
                                       gamma=gamma, 
-                                      batch_size=batch_size)
+                                      batch_size=batch_size,
+                                      num_batches=num_batches)
 
     if(algorithm == 'least_squares_GD'):
         w, loss = least_squares_GD(y=y_train, 
