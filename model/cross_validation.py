@@ -1,8 +1,8 @@
 import numpy as np
 
-from scripts.proj1_helpers import *
-from dataprocess.process import *
-from scripts.implementations import *
+from scripts.proj1_helpers import build_poly, standardize, predict_labels, accuracy
+from dataprocess.process import remove_tiny_features
+from scripts.implementations import reg_logistic_regression
 
 
 def cross_validation(y, X, k_indices, k, degree, gamma, lambda_, max_iters, batch_size):
