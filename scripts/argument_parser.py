@@ -8,7 +8,7 @@ default_params = {
         'max_iters': 5000,
         'gamma': 1e-5,
         'batch_size': 100,
-        'kfolds': 10,
+        'k_folds': 10,
         'output_file': 'predictions'
     }
 
@@ -53,7 +53,7 @@ def parse_arguments():
              ' can be very helpful for troubleshooting problems', default=False
     )
     parser.add_argument(
-        '--kfolds', type=int,
+        '--k_folds', type=int,
         help='Number of fold in cross validation'
     )
     parser.add_argument(

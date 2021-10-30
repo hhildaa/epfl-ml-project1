@@ -83,7 +83,7 @@ def cross_validation(y, X, k_indices, k, degree, gamma, lambda_, max_iters, batc
     
     acc_train = accuracy(y_train_pred, y_train)
     acc_test = accuracy(y_test_pred, y_test)
-    return acc_train, acc_test
+    return acc_train, acc_test, y_test_pred, y_test
 
 
 
@@ -95,23 +95,32 @@ def cross_validation(y, X, k_indices, k, degree, gamma, lambda_, max_iters, batc
             accs_train = np.zeros((len(degrees), len(lambdas)))
             accs_test = np.zeros((len(degrees), len(lambdas)))
 
+            all_preds = {}
+            all_labels = {}
             for id_degree, degree in enumerate(degrees):
                 for id_lambda, lambda_ in enumerate(lambdas):
                     cur_acc_train = np.zeros(k_fold)
                     cur_acc_test = np.zeros(k_fold)
 
+                    preds = []
+                    labels = []
                     for k in range(k_fold):
-                        acc_train, acc_test = cross_validation(y=y, X=X, k_indices=k_indices, k=k, 
-                                                               degree=degree, 
-                                                               gamma=gamma, 
-                                                               lambda_=lambda_, 
-                                                               max_iters=max_iters, 
-                                                               batch_size=batch_size,
-                                                               algorithm=algorithm,
-                                                               params=params)
+                        acc_train, acc_test, y_test_pred, y_test = cross_validation(y=y, X=X, k_indices=k_indices, k=k, 
+                                                                                    degree=degree, 
+                                                                                    gamma=gamma, 
+                                                                                    lambda_=lambda_, 
+                                                                                    max_iters=max_iters, 
+                                                                                    batch_size=batch_size,
+                                                                                    algorithm=algorithm,
+                                                                                    params=params)
 
                         cur_acc_train[k] = acc_train
                         cur_acc_test[k] = acc_test
+                        preds.append(y_test_pred)
+                        labels.append(y_test)
+
+                    all_preds[(degree, lambda_)] = preds
+                    all_labels[(degree, lambda_)] = labels
 
                     accs_train[id_degree, id_lambda] = cur_acc_train.mean()
                     accs_test[id_degree, id_lambda] = cur_acc_test.mean()
@@ -121,4 +130,7 @@ def cross_validation(y, X, k_indices, k, degree, gamma, lambda_, max_iters, batc
             id_degree, id_lambda = np.unravel_index(np.argmax(accs_test), accs_test.shape)
             best_degree, best_lambda = degrees[id_degree], lambdas[id_lambda]
             best_accuracy = np.max(accs_test)
-            return best_accuracy, best_degree, best_lambda
+
+            best_preds = all_preds[(best_degree, best_lambda)]                    
+            best_labels = all_labels[(best_degree, best_lambda)]
+            return best_accuracy, best_degree, best_lambda, best_preds, best_labels

@@ -66,20 +66,20 @@ def main(**params):
 
     # Cross validation
     for jet in data_splits_train:
-        X_train_jet, y_train_jet, _ = data_splits_train[jet]
+        X_train_jet, y_train_jet, _, _ = data_splits_train[jet]
         
         if(params['verbose']):
             print(f"JET NUMBER {int(jet)}:")     
 
-        best_accuracy, best_degree, best_lambda = k_fold_cross_validation(y_train_jet, X_train_jet, params['k-fold'],
-                                                                       lambdas=np.logspace(-10, -2, 9),
-                                                                       degrees=range(8, 12),
-                                                                       max_iters=params['max_iters'],
-                                                                       batch_size=params['batch_size'],
-                                                                       gamma=params['gamma'],
-                                                                       verbose=params['verbose'], 
-                                                                       algorithm=params['algorithm'],
-                                                                       params=params)
+        best_accuracy, best_degree, best_lambda, _, _ = k_fold_cross_validation(y_train_jet, X_train_jet, params['k_folds'],
+                                                                                lambdas=np.logspace(-10, -2, 9),
+                                                                                degrees=range(8, 12),
+                                                                                max_iters=params['max_iters'],
+                                                                                batch_size=params['batch_size'],
+                                                                                gamma=params['gamma'],
+                                                                                verbose=params['verbose'], 
+                                                                                algorithm=params['algorithm'],
+                                                                                params=params)
         best_degrees[jet] = best_degree
         best_lambdas[jet] = best_lambda
 
@@ -136,8 +136,47 @@ def main(**params):
 
 
 ######################################################################################################################
+    
+    # Cross validation on the whole training dataset (for the purpose of report)
 
-    # Training on the whole dataset
+   
+    all_preds = {}
+    all_labels = {}
+    for jet in data_splits_train_whole:
+        X_train_whole_jet, y_train_whole_jet, _ = data_splits_train_whole[jet]
+         
+
+        _, _, _, preds, labels = k_fold_cross_validation(y_train_whole_jet, X_train_whole_jet, params['k_folds'],
+                                                         lambdas=np.array([best_lambdas[jet]]),
+                                                         degrees=np.array([best_degrees[jet]]),
+                                                         max_iters=params['max_iters'],
+                                                         batch_size=params['batch_size'],
+                                                         gamma=params['gamma'],
+                                                         verbose=params['verbose'], 
+                                                         algorithm=params['algorithm'],
+                                                         params=params)
+        all_preds[jet] = preds
+        all_labels = labels
+
+
+    accs_test_whole = np.zeros(params['k_folds'])
+    for k in range(params['k_folds']):
+        fold_labels = []
+        fold_preds = []
+        for jet in data_splits_train_whole:
+            fold_preds.append(all_preds[jet][k])
+            fold_labels.append(all_labels[jet][k])
+
+        fold_preds = np.concatenate(fold_preds, axis=0)
+        fold_labels = np.concatenate(fold_labels, axis=0)
+        accs_test_whole[k] = accuracy(fold_preds, fold_labels)
+
+    print(f"FINAL Test (on the whole dataset): {accs_test_whole.mean():.4f} +- {acc_test_whole.std():.4f}")
+
+
+######################################################################################################################
+
+    # Training on the whole dataset (for the purpose of submission)
 
     weights = {}
 
@@ -153,7 +192,7 @@ def main(**params):
         if(algorithm == 'reg_logistic'):
             w, loss = reg_logistic_regression(y=y_train_whole_jet, 
                                               tx=X_train_whole_jet, 
-                                              lambda_=lambda_, 
+                                              lambda_=best_lambdas[jet], 
                                               initial_w=w0, 
                                               max_iters=max_iters, 
                                               gamma=gamma, 
