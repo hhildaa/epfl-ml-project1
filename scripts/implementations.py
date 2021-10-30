@@ -10,6 +10,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
         <DO-SOMETHING>
     """
+    
     data_size = len(y)
 
     if shuffle:
@@ -49,7 +50,6 @@ def compute_stoch_gradient(y, tx, w):
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Linear regression using gradient descent"""
     w = initial_w
-    w = initial_w
     for n_iter in range(max_iters):
         gr=compute_gradient(y,tx,w)
         loss=(compute_loss(y,tx,w))
@@ -61,9 +61,10 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
 def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     """Linear regression using stochastic gradient descent"""
     batch_size = 1
+    num_batches = max(1, int(y.shape[0] / batch_size))
     w = initial_w
     for n_iter in range(max_iters):
-        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
+        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, num_batches):
             gr=compute_stoch_gradient(minibatch_y,minibatch_tx,w)
             w=w-gamma*gr
         loss=compute_loss(y,tx, w)
@@ -72,19 +73,6 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
 #              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return (w, loss)
 
-def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
-    #linear regression using gradient descent
-    batch_size = 1
-    w = initial_w
-    for n_iter in range(max_iters):
-        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
-            gr=compute_stoch_gradient(minibatch_y,minibatch_tx,w)
-            w=w-gamma*gr
-        loss=compute_loss(y,tx, w)
-            
-        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
-    return (w, loss)
 
 def ridge_regression(y, tx, lambda_):
     """implement ridge regression."""
@@ -131,11 +119,11 @@ def regularized_cross_entropy_gradient(y, tx, w, lambda_):
     return cross_entropy_gradient(y, tx, w) + 2 * lambda_ * w
 
 
-def logistic_regression(y, tx, initial_w, max_iters, gamma, batch_size=1):
+def logistic_regression(y, tx, initial_w, max_iters, gamma, batch_size=1, num_batches=1):
     """Logistic regression using gradient descent or SGD"""
     w = initial_w
     for n_iter in range(max_iters):
-        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
+        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, num_batches):
             gr = cross_entropy_gradient(minibatch_y, minibatch_tx, w)
             w = w - gamma * gr
             
@@ -146,11 +134,11 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, batch_size=1):
     return (w, loss)
 
 
-def reg_logistic_regression(y, tx, lambda_ , initial_w, max_iters, gamma, batch_size=1):
+def reg_logistic_regression(y, tx, lambda_ , initial_w, max_iters, gamma, batch_size=1, num_batches=1):
     """Regularized logistic regression using gradient descent or SGD"""
     w = initial_w
     for n_iter in range(max_iters):
-        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
+        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, num_batches):
             gr = regularized_cross_entropy_gradient(minibatch_y, minibatch_tx, w, lambda_)
             w = w - gamma * gr
             
