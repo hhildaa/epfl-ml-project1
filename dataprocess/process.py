@@ -19,5 +19,34 @@ def remove_tiny_features(X, threshold=1):
     X_cleaned = np.delete(X, remove_features, axis=1)
     return X_cleaned, remove_features
 
+def remove_outliers(X, y, custom_range=None):
+    """Remove outliers, i.e. rows with values that are farther than 1.5 IQR from mean"""
+    custom_keep = np.copy(X)
+    if custom_range is not None:
+        if len(custom_range) != X.shape[1]:
+            raise ValueError("custom_range has wrong length!")
+        for i in range(len(custom_range)):
+            if custom_range[i] is not None:
+                lower, upper = custom_range[i]
+                custom_keep[:,i] = np.logical_and(custom_keep[:,i] >= lower, custom_keep[:,i] <= upper)
+            else:
+                custom_keep[:, i] = True
+    else:
+        custom_keep[:,:] = True
+    upper_quart = np.quantile(X, .75, axis=0)
+    lower_quart = np.quantile(X, .25, axis=0)
+    IQR = upper_quart - lower_quart
+    
+    lower_bound = lower_quart - 1.5*IQR
+    upper_bound = upper_quart + 1.5*IQR
+    
+    lower_bound = np.reshape(lower_bound, (1, len(lower_bound)))
+    upper_bound = np.reshape(upper_bound, (1, len(upper_bound)))
+    
+    to_keep = np.all(np.logical_and(custom_keep, X >= lower_bound, X <= upper_bound), axis=1)
 
+    X = X[to_keep, :]
+    y = y[to_keep]
+    
+    return X, y
 
