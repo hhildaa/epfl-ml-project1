@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
@@ -72,6 +71,35 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
 #        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
 #              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return (w, loss)
+
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
+    #linear regression using gradient descent
+    batch_size = 1
+    w = initial_w
+    for n_iter in range(max_iters):
+        for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
+            gr=compute_stoch_gradient(minibatch_y,minibatch_tx,w)
+            w=w-gamma*gr
+        loss=compute_loss(y,tx, w)
+            
+        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+    return (w, loss)
+
+def ridge_regression(y, tx, lambda_):
+    """implement ridge regression."""
+    tx_t = np.transpose(tx)
+    N, D = tx.shape
+    linear_func = tx_t.dot(tx) + (2 * N * lambda_ * np.identity(D))
+    Xty = tx_t.dot(y)
+    weights = np.linalg.solve(linear_func, Xty)
+    mse = compute_loss(y, tx, weights)
+    return weights, mse
+
+def compute_ridge_gradient(y, tx, lambda_, w):
+    """returns gradient for ridge regression"""
+    grad = compute_gradient(y, tx, w)
+    return grad + 2*lambda_*w
             
 def sigmoid(z):
     return 1.0 / (1 + np.exp(-z))
