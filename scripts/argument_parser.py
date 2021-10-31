@@ -17,7 +17,9 @@ def parse_arguments():
     """
     Set arguments from the command line when running 'run.py'. Option '-h' or '--help' provides 
     information about parameters and its usage.
-    :return: parser.parse_args()
+
+    returns:
+    parser.parse_args() -- ArgumentParser with given arguments
     """
 
     parser = argparse.ArgumentParser(
