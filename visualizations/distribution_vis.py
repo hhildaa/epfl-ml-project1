@@ -1,7 +1,4 @@
-# imports
 import matplotlib.pyplot as plt
-
-#plot the distributions of each features
 
 def distibutions_plot(data, features):
     """
@@ -11,7 +8,6 @@ def distibutions_plot(data, features):
     data: a matrix, where each column is a sample of data from a distribution
     features: expect an array of names of the columns
     """
-    #NEEDED DATA CLEANING
     col_num=data.shape[1]
 
     fig, axs = plt.subplots(col_num, figsize=(3,3*col_num))
@@ -19,7 +15,6 @@ def distibutions_plot(data, features):
         axs[i].hist(data[:,i], bins=100) 
         axs[i].set_title(f'{features[i]}')
 
-    #fig.suptitle('Distributions of the values of different features', fontsize=20)
     fig.tight_layout()
 
 def distributions_compare_plot(data1, data2, features):
@@ -31,7 +26,6 @@ def distributions_compare_plot(data1, data2, features):
     data2: a matrix with same number of columns, where each column is a sample from the same feature as the data1
     features: expect an array of names of the columns
     """
-    #NEEDED DATA CLEANING
     col_num=data1.shape[1]
 
     fig, axs = plt.subplots(col_num, figsize=(3,3*col_num))
@@ -40,5 +34,4 @@ def distributions_compare_plot(data1, data2, features):
         axs[i].hist(data2[:,i], bins=100)
         axs[i].set_title(f'{features[i]}')
 
-    #fig.suptitle('Distributions of the values of different features', fontsize=20)
     fig.tight_layout()
