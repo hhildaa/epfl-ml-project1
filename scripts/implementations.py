@@ -52,7 +52,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     w = initial_w
     for n_iter in range(max_iters):
         gr=compute_gradient(y,tx,w)
-        loss=(compute_loss(y,tx,w))
+        loss=compute_loss(y,tx,w)
         w=w-gamma*gr
 #        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
 #              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
@@ -61,7 +61,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
 def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     """Linear regression using stochastic gradient descent"""
     batch_size = 1
-    num_batches = max(1, int(y.shape[0] / batch_size))
+    num_batches = 1 
     w = initial_w
     for n_iter in range(max_iters):
         for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, num_batches):
