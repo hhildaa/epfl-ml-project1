@@ -36,7 +36,7 @@ def parse_arguments():
     )
 
     parser.add_argument(
-        '--remove_outliers', action='store_true', help='Filter outliers', default=False
+        '--bound_outliers', action='store_true', help='Bound values of outliers', default=False
     )
     parser.add_argument(
         '--impute_median', action='store_true', help='Median imputing for unknown values', default=False

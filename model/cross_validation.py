@@ -31,8 +31,8 @@ def cross_validation(y, X, k_indices, k, degree, gamma, lambda_, max_iters, batc
         X_train, median = impute_median(X_train, None)
         X_test, _ = impute_median(X_test, median)
 
-    # Remove outliers
-    if(params['remove_outliers']):
+    # Bound outliers
+    if(params['bound_outliers']):
         X_train, upper_quart, lower_quart = bound_outliers(X_train, None, None)
         X_test, _, _ = bound_outliers(X_test, upper_quart, lower_quart)
 
