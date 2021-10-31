@@ -9,7 +9,7 @@ def remove_custom_features(X, custom_feature_ids):
 
     Inputs: 
     X: matrix of the dataset
-    custom_feature_ids: the ids of the uneccessary features
+    custom_feature_ids: ids of unnecessary features
 
     Output:
     X_cleaned: the matrix without the given features
@@ -19,7 +19,7 @@ def remove_custom_features(X, custom_feature_ids):
 
 def remove_tiny_features(X, threshold=1):
     """
-    Remove features from the dataset with less or equal unique values then the threshold. 
+    Remove features from the dataset a number of unique values that is less than or equal to the threshold. 
 
     Inputs: 
     X: matrix of the dataset
@@ -46,7 +46,8 @@ def remove_outliers(X, y, custom_range=None):
     
     Inputs:
     X, y: the dataset
-    custom_range: ???
+    custom_range: (min, max) tuples for each columns of X to remove values outside of this range
+                  for no changes, single tuples can be None or custom_range can be None
 
     Outputs:
     X, y: the dataset without outliers
@@ -87,13 +88,13 @@ def bound_outliers(X, upper_quart=None, lower_quart=None):
 
     Inputs:
     X: the matrix of the dataset
-    upper_quart: upper quartile of the dataset
-    lower_quart: lower quartile of the dataset
+    upper_quart: upper quartile of the columns (None for upper_quartile of X)
+    lower_quart: lower quartile of the columns (None for lower_quartile of X)
 
     Outputs:
     X: the cleaned matrix of the dataset
-    upper_quart: upper quartile of the dataset
-    lower_quart: lower quartile of the dataset
+    upper_quart: input upper_quart or upper quartile of the dataset if upper_quart was None
+    lower_quart: input lower_quart or lower quartile of the dataset if lower_quart was None
     """
     if upper_quart is None:
         upper_quart = np.quantile(X, .75, axis=0)
@@ -126,7 +127,7 @@ def impute_median(X, train_medians=None, nan_val=-999):
 
     Outputs:
     X: the median imputed X
-    train_medians: the computed median of each features
+    train_medians: input train_medians or the computed median of each features if train_medians was None
     """
     if train_medians is None:
         train_medians = list()
