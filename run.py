@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -88,10 +86,6 @@ def main(**params):
             print(f"Best accuracy for JET {int(jet)}: {best_accuracy}")
 
 
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("Current Time: ", current_time)
-
 ######################################################################################################################
     
     # Cross validation on the whole training dataset (for the purpose of report)
@@ -131,12 +125,6 @@ def main(**params):
         accs_test_whole[k] = accuracy(fold_preds, fold_labels)
 
     print(f"FINAL Test (on the whole dataset): {accs_test_whole.mean():.4f} +- {accs_test_whole.std():.4f}")
-
-
-
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("Current Time: ", current_time)
 
 
 ######################################################################################################################
@@ -202,11 +190,6 @@ def main(**params):
         # Save cleaned data
         data_splits_train_whole[jet] = (X_train_whole_jet, y_train_whole_jet, ids_train_whole_jet) 
         data_splits_test[jet] = (X_test_jet, y_test_jet, ids_jet) 
-
-
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("Current Time: ", current_time)
 
 
 ######################################################################################################################
@@ -279,11 +262,6 @@ def main(**params):
     acc_train_whole = accuracy(all_preds, all_labels)
     if(params['verbose']):
         print(f"Train accuracy on the whole train data: {acc_train_whole:.4f}")
-
-    
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("Current Time: ", current_time)
 
 
 ######################################################################################################################
