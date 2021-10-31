@@ -3,12 +3,20 @@ import numpy as np
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
     Generate a minibatch iterator for a dataset.
-    Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
-    Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
-    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches.
+
     Example of use :
     for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
         <DO-SOMETHING>
+
+    Input:
+    y: prediction variable
+    tx: input data
+    batch_size: size of batches
+    num_batches: number of batches to return from tx
+    shuffle: boolean whether to shuffle dataset before batching
+
+    Returns:
+    Iterator over batches
     """
     
     data_size = len(y)
