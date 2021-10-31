@@ -139,6 +139,25 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     return (w, loss)
 
 
+def least_squares(y, tx):
+    """
+    Least squares linear regression using normal equations.
+    
+    Input:
+    y: prediction variable
+    tx: data
+
+    Returns:
+    w: weights of least squares linear regression
+    mse: loss of w*tx on y (MSE, training error)
+    """
+    tx_t = np.transpose(tx)
+    weights = np.linalg.solve(tx_t.dot(tx), tx_t.dot(y))
+    mse = compute_loss(y, tx, weights)
+
+    return weights, mse
+
+
 def ridge_regression(y, tx, lambda_):
     """
     Ridge regression using normal equations.
