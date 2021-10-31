@@ -6,7 +6,18 @@ import numpy as np
 
 
 def load_csv_data(data_path, sub_sample=False):
-    """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
+    """
+    Loads data.
+    
+    Input:
+    data_path: path to data
+    sub_sample: if True, sample only 50 datapoints instead of whole dataset
+    
+    returns:
+    y: class labels
+    input_data: features
+    ids: event ids
+    """
     y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=1)
     x = np.genfromtxt(data_path, delimiter=",", skip_header=1)
     ids = x[:, 0].astype(np.int)
@@ -27,7 +38,17 @@ def load_csv_data(data_path, sub_sample=False):
 
 
 def predict_labels(weights, data, competition=False):
-    """Generates class predictions given weights, and a test data matrix"""
+    """
+    Generates class predictions.
+    
+    Input: 
+    weights: weights (model)
+    data: test data matrix
+    competition: if True, negative predictions are -1 instead of 0
+
+    Returns:
+    y_pred: predictions for data
+    """
     
     negative_class = 0
     if(competition):
@@ -41,10 +62,12 @@ def predict_labels(weights, data, competition=False):
 
 def create_csv_submission(ids, y_pred, name):
     """
-    Creates an output file in .csv format for submission to Kaggle or AIcrowd
-    Arguments: ids (event ids associated with each prediction)
-               y_pred (predicted class labels)
-               name (string name of .csv output file to be created)
+    Creates an output file in .csv format for submission to Kaggle or AIcrowd.
+
+    Input:
+    ids: event ids associated with each prediction
+    y_pred: predicted class labels
+    name: string name of .csv output file to be created
     """
     with open(name, 'w') as csvfile:
         fieldnames = ['Id', 'Prediction']
@@ -54,9 +77,18 @@ def create_csv_submission(ids, y_pred, name):
             writer.writerow({'Id':int(r1),'Prediction':int(r2)})
 
 def accuracy(y_pred, y_true):
+    """Calculate accuracy between y_true and y_pred"""
     return np.sum(y_pred == y_true) / len(y_true)
 
 def standardize(X, mean=None, std=None):
+    """
+    Standardizes values in X
+
+    Input:
+    X: data
+    mean: custom means for each column, use means of X if None
+    std: custom stds for each column, use stds of X if None
+    """
     if mean is None:
         mean = np.mean(X, axis=0)
 
@@ -67,7 +99,16 @@ def standardize(X, mean=None, std=None):
     return X, mean, std
 
 def build_poly(X, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    """
+    Calculate polynomial basis functions for input data x, for j=0 up to j=degree.
+    
+    Input:
+    X: data
+    degree: max degree to calculate polynomial for
+
+    Returns:
+    X_poly: X with polynomial features
+    """
     
     d = X.shape[1]
     X_poly = []
@@ -81,25 +122,24 @@ def build_poly(X, degree):
     X_sin = np.sin(X)
     X_cos = np.cos(X)
     X_poly = np.concatenate((X_poly, X_sin, X_cos), axis=1)
-    
-    
-    """
-    # cross terms of second degree
-    X_cross = []
-    for i in range(d):
-        for j in range(d):
-            if i != j:
-                X_cross.append((X[:, i] * X[:, j]).reshape(-1, 1))
-                
-    X_cross = np.concatenate(X_cross, axis=1)
-    X_final = np.concatenate((X_poly, X_cross), axis=1)    
-    return X_final
-    """
-    
+
     return X_poly
 
 
 def split_data_by_feature(y, X, ids, feature_id, train=True):
+    """
+    split data on feature given in feature_id (assuming categorical)
+
+    Input:
+    y: class labels
+    X: features
+    ids: ids of columns in X
+    feature_id: id of feature to split on
+    train: if False, do not add y to split
+
+    Returns:
+    splits: split of y, X and ids on feature_id
+    """
     unique_values = np.unique(X[:, feature_id])
     X_new = np.delete(X, feature_id, axis=1)
     splits = {}

@@ -1,20 +1,18 @@
 # imports, and load data
-
 import numpy as np
 import matplotlib.pyplot as plt
 
-DATA_TRAIN_PATH = 'data/train.csv'
-y_train, X_train, ids = load_csv_data(DATA_TRAIN_PATH, sub_sample=True)
-features = np.genfromtxt(DATA_TRAIN_PATH, delimiter=",",names=True).dtype.names
-
-# visulaize correlated features
+# visualize correlated features
 
 def correlated_pairs(data):
     """
     Create a list of pairs of correlated columns of the given data.
 
     Input:
-        data: a matrix, where each column is a sample of data
+    data: a matrix, where each column is a sample of data
+
+    Output: 
+    corr_pairs: the index pairs of the most correlated features (i.e. correlation>0.9)
     """
     col_num=data.shape[1]
     corr_pairs = []
@@ -30,10 +28,9 @@ def correlation_plot(data, features):
     Plot correlated columns of data in scatter plots.
 
     Input:
-        data: a matrix, where each column is a sample of data
-        features: an array of names of the columns
+    data: a matrix, where each column is a sample of data
+    features: an array of names of the columns
     """
-    #NEEDED DATA CLEANING
     corr_pairs = correlated_pairs(data)
     fig, axs = plt.subplots(len(corr_pairs), figsize=(6,6*len(corr_pairs)))
     for i in range(len(corr_pairs)): 
@@ -43,8 +40,6 @@ def correlation_plot(data, features):
     #fig.suptitle('Correlated features',  fontsize=20)
     fig.tight_layout()
 
-#correlation_plot(X_train, features)
-
 # plot correlation heatmap
 
 def correlation_matrix(data):
@@ -52,8 +47,11 @@ def correlation_matrix(data):
     Make a matrix of the correlations of the columns of data.
 
     Input:
-        data: a matrix, where each column is a sample of data
-        features: an array of names of the columns
+    data: a matrix, where each column is a sample of data
+    features: an array of names of the columns
+
+    Output: 
+    corr_map: a matrix of correlation values
     """
     col_num=data.shape[1]
     corr_map = np.zeros((col_num, col_num))
@@ -68,20 +66,20 @@ def correlation_heatmap(data, features):
     Visualize correlation of the columns of a dataset as a heatmap.
 
     Input:
-        data: a matrix, where each column is a sample of data
-        features: an array of names of the columns
+    data: a matrix, where each column is a sample of data
+    features: an array of names of the columns
     """
 
     corr_map = correlation_matrix(data)
     col_num=data.shape[1]
-    fig, ax = plt.subplots(figsize=(20,20))
+    fig, ax = plt.subplots(figsize=(max(0.5*col_num,10) , max(0.5*col_num,10)))
     im = ax.imshow(corr_map)
 
-    ax.set_xticks(np.arange(col_num))
-    ax.set_yticks(np.arange(col_num))
+    ax.set_xticks(np.arange(len(features[2:])))
+    ax.set_yticks(np.arange(len(features[2:])))
 
-    ax.set_xticklabels(features[2:])
-    ax.set_yticklabels(features[2:])
+    ax.set_xticklabels(features[2:], fontsize=12)
+    ax.set_yticklabels(features[2:], fontsize=12)
 
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
             rotation_mode="anchor")
@@ -89,10 +87,8 @@ def correlation_heatmap(data, features):
     for i in range(col_num):
         for j in range(col_num):
             text = ax.text(j, i, round(corr_map[i, j], 2),
-                        ha="center", va="center", color="w")
+                        ha="center", va="center", color="w", fontsize=12)
 
     ax.set_title("Heatmap of correlation between features", fontsize=20)
     fig.tight_layout()
     plt.show()
-
-#correlation_heatmap(X_train,features)
