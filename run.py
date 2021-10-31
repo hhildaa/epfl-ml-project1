@@ -3,15 +3,17 @@ from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 
-from scripts.implementations import *
+import os
+os.sys.path.append('./scripts')
+from implementations import *
+from proj1_helpers import *
+from argument_parser import *
 
+os.sys.path.append('./dataprocess')
 from dataprocess.process import *
-from model.cross_validation import *
 
-from scripts.proj1_helpers import *
-from scripts.argument_parser import *
-
-
+os.sys.path.append('./model')
+from cross_validation import *
 
 def main(**params):
     params = dict(
