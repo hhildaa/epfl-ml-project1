@@ -45,7 +45,7 @@ def parse_arguments():
         '--feature_expansion', action='store_true', help='Median imputing for unknown values', default=False
     )
     parser.add_argument(
-        '--split_jet', action='store_false', help='Split data depending on the number of jets', default=True
+        '--split_jet', action='store_true', help='Split data depending on the number of jets', default=False
     )
     parser.add_argument(
         '--verbose', action='store_true',
