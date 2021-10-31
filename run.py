@@ -40,12 +40,6 @@ def main(**params):
                     "PRI_jet_leading_phi", "PRI_jet_subleading_pt", "PRI_jet_subleading_eta", "PRI_jet_subleading_phi", "PRI_jet_all_pt"]
     feature_ids = {feature:i for i, feature in enumerate(feature_list)}
 
-
-    # TODO: REMOVING FEATURES OF TRAINING DATA FOR CROSS VALIDATION
-    #       - BE CAREFUL THAT AFTER SPLITTING ON JET, INDICES OF FEATURES CHANGE
-
-
-
     # Without splitting on JET
     data_splits_train = {-1:(X_train, y_train, ids_train)}
     data_splits_train_whole = {-1:(X_train_whole, y_train_whole, ids_train_whole)}
@@ -161,11 +155,6 @@ def main(**params):
     for jet in data_splits_train_whole:
         X_train_whole_jet, y_train_whole_jet, ids_train_whole_jet = data_splits_train_whole[jet]
         X_test_jet, y_test_jet, ids_jet = data_splits_test[jet]
-
-
-
-        # TODO: REMOVING FEATURES - BE CAREFUL THAT AFTER SPLITTING ON JET, INDICES OF FEATURES CHANGE
-
 
         # Remove degenerated features
         X_train_whole_jet, removed_features_jet = remove_tiny_features(X_train_whole_jet)
