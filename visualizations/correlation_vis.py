@@ -9,7 +9,10 @@ def correlated_pairs(data):
     Create a list of pairs of correlated columns of the given data.
 
     Input:
-        data: a matrix, where each column is a sample of data
+    data: a matrix, where each column is a sample of data
+
+    Output: 
+    corr_pairs: the index pairs of the most correlated features (i.e. correlation>0.9)
     """
     col_num=data.shape[1]
     corr_pairs = []
@@ -25,8 +28,8 @@ def correlation_plot(data, features):
     Plot correlated columns of data in scatter plots.
 
     Input:
-        data: a matrix, where each column is a sample of data
-        features: an array of names of the columns
+    data: a matrix, where each column is a sample of data
+    features: an array of names of the columns
     """
     corr_pairs = correlated_pairs(data)
     fig, axs = plt.subplots(len(corr_pairs), figsize=(6,6*len(corr_pairs)))
@@ -44,8 +47,11 @@ def correlation_matrix(data):
     Make a matrix of the correlations of the columns of data.
 
     Input:
-        data: a matrix, where each column is a sample of data
-        features: an array of names of the columns
+    data: a matrix, where each column is a sample of data
+    features: an array of names of the columns
+
+    Output: 
+    corr_map: a matrix of correlation values
     """
     col_num=data.shape[1]
     corr_map = np.zeros((col_num, col_num))
@@ -60,10 +66,8 @@ def correlation_heatmap(data, features):
     Visualize correlation of the columns of a dataset as a heatmap.
 
     Input:
-        data: a matrix, where each column is a sample of data
-        features: an array of names of the columns
-    Return:
-        heatmap
+    data: a matrix, where each column is a sample of data
+    features: an array of names of the columns
     """
 
     corr_map = correlation_matrix(data)
