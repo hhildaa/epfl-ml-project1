@@ -166,8 +166,8 @@ def main(**params):
             X_train_whole_jet, median = impute_median(X_train_whole_jet, None)
             X_test_jet, _ = impute_median(X_test_jet, median)
 
-        # Remove outliers
-        if(params['remove_outliers']):
+        # Bound outliers
+        if(params['bound_outliers']):
             X_train_whole_jet, upper_quart, lower_quart = bound_outliers(X_train_whole_jet, None, None)
             X_test_jet, _, _ = bound_outliers(X_test_jet, upper_quart, lower_quart)
 
