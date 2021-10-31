@@ -29,7 +29,7 @@ def build_k_indices(y, k_fold):
 
 def cross_validation(y, X, k_indices, k, degree, gamma, lambda_, max_iters, batch_size, algorithm, params):
     """
-    Perform cross validation accoriding to the given algorithm. 
+    Perform cross validation according to the given algorithm. 
 
     Inputs: 
     y, X: the given dataset
