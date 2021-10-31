@@ -4,10 +4,31 @@ os.sys.path.append('./scripts')
 import numpy as np
 
 def remove_custom_features(X, custom_feature_ids):
+    """
+    Remove the given features from the dataset. 
+
+    Inputs: 
+    X: matrix of the dataset
+    custom_feature_ids: the ids of the uneccessary features
+
+    Output:
+    X_cleaned: the matrix without the given features
+    """
     X_cleaned = np.delete(X, custom_feature_ids, axis=1)
     return X_cleaned
 
 def remove_tiny_features(X, threshold=1):
+    """
+    Remove features from the dataset with less or equal unique values then the threshold. 
+
+    Inputs: 
+    X: matrix of the dataset
+    threshold: value of threshold
+
+    Outputs:
+    X_cleaned: the matrix without the features
+    remove_features: the indexes of the removed features
+    """
     d = X.shape[1]
     remove_features = []
     
@@ -20,7 +41,16 @@ def remove_tiny_features(X, threshold=1):
     return X_cleaned, remove_features
 
 def remove_outliers(X, y, custom_range=None):
-    """Remove outliers, i.e. rows with values that are farther than 1.5 IQR from mean"""
+    """
+    Remove outliers, i.e. rows with values that are farther than 1.5 IQR from mean
+    
+    Inputs:
+    X, y: the dataset
+    custom_range: ???
+
+    Outputs:
+    X, y: the dataset without outliers
+    """
     custom_keep = np.copy(X)
     if custom_range is not None:
         if len(custom_range) != X.shape[1]:
@@ -53,7 +83,17 @@ def remove_outliers(X, y, custom_range=None):
 def bound_outliers(X, upper_quart=None, lower_quart=None):
     """
     Bound outliers, i.e. rows with values that are farther than 1.5 IQR
-    from Lower/Upper quartile, to this quartile
+    from Lower/Upper quartile, to this quartile.
+
+    Inputs:
+    X: the matrix of the dataset
+    upper_quart: upper quartile of the dataset
+    lower_quart: lower quartile of the dataset
+
+    Outputs:
+    X: the cleaned matrix of the dataset
+    upper_quart: upper quartile of the dataset
+    lower_quart: lower quartile of the dataset
     """
     if upper_quart is None:
         upper_quart = np.quantile(X, .75, axis=0)
@@ -75,11 +115,18 @@ def bound_outliers(X, upper_quart=None, lower_quart=None):
 
 def impute_median(X, train_medians=None, nan_val=-999):
     """
-        Replace nan_val by median in X
-        Custom medians to use same median for training and testing can be 
-        put into train_medians (otherwise use col medians of X)
-        
-        Returns X (median-imputed) and train_medians
+    Replace nan_val by median in X
+    Custom medians to use same median for training and testing can be 
+    put into train_medians (otherwise use col medians of X). 
+
+    Inputs: 
+    X: the matrix of the given dataset
+    train_medians: values which can be used for each feature as a median
+    nan_val: the value of Nan elements
+
+    Outputs:
+    X: the median imputed X
+    train_medians: the computed median of each features
     """
     if train_medians is None:
         train_medians = list()
