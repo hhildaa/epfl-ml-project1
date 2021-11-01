@@ -1,0 +1,29 @@
+\def\N{\mathbb{N}}
+\def\R{\mathbb{R}}
+\def\Q{\mathbb{Q}}
+\def\Z{\mathbb{Z}}
+\def\C{\mathbb{C}}
+\def\D{\mathbb{D}}
+\def\O{\mathcal{O}}
+
+\newcommand{\dx}{\mathrm{d}x}
+\newcommand{\dt}{\mathrm{d}t}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+
+%basic probabilities
+\newcommand{\pr}[1]{\mathbb{P}\left( #1 \right)}
+\newcommand{\cpr}[2]{\mathbb{P}\left( #1 \mid #2 \right)}
+\newcommand{\E}[1]{\mathbb{E}\left( #1 \right)}
+\newcommand{\cE}[2]{\mathbb{E}\left( #1 \mid #2 \right)}
+
+\newcommand{\ind}[1]{\mathbb{1}_{#1}}
+
+%random variables
+\newcommand{\gauss}[2]{\mathcal{N}(#1, #2)}
+
+%densities
+\newcommand{\gaussd}[2]{
+\frac{1}{\sqrt{2\pi #2}} \exp\left(-\frac{(t-#1)^2}{2 #2}\right)}
+
+\setlength{\parindent}{0em}
