@@ -21,7 +21,7 @@ We were not allowed to use any other external libraries.
 
 ### Documentation
 
-
+The documentation of the project can be found under documentation/The_Higgs_Boson_Machine_Learning_Challenge.pdf. More information about our taskcan be found also in this folder under the name of project_description.pdf.
 
 ### Data
 The data is available in the data folder compressed. Before working with the code, it should be uncompressed.
