@@ -36,7 +36,7 @@ In this way the code will run with default settings.
 
 If you want to run with other setting write a similar code as below.
 ```
-python run.py --verbose --feature_expansion --remove_outliers --split_jet --algorithm reg_logistic
+python run.py --verbose --feature_expansion --bound_outliers --impute_median  --split_jet --algorithm reg_logistic
 ```
 
 The terms mean the following:
