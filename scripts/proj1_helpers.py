@@ -100,7 +100,7 @@ def standardize(X, mean=None, std=None):
 
 def build_poly(X, degree):
     """
-    Calculate polynomial basis functions for input data x, for j=0 up to j=degree.
+    Calculate polynomial basis functions for input data x up to specified degree and also add sin/cos of the initial features
     
     Input:
     X: data

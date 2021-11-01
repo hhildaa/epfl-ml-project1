@@ -94,7 +94,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     y: prediction variable
     tx: data
     initial_w: initial weights used
-    max_iters: Number of iterations after which training is stopped
+    max_iters: number of iterations after which training is stopped
     gamma: step size for gradient descent
 
     Returns:
@@ -106,8 +106,6 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
         gr=compute_gradient(y,tx,w)
         loss=compute_loss(y,tx,w)
         w=w-gamma*gr
-#        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-#              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return (w, loss)
 
 def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
@@ -118,7 +116,7 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     y: prediction variable
     tx: data
     initial_w: initial weights used
-    max_iters: Number of iterations after which training is stopped
+    max_iters: number of iterations after which training is stopped
     gamma: step size for (stochastic) gradient descent
 
     Returns:
@@ -133,9 +131,6 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
             gr=compute_stoch_gradient(minibatch_y,minibatch_tx,w)
             w=w-gamma*gr
         loss=compute_loss(y,tx, w)
-            
-#        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-#              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return (w, loss)
 
 
@@ -181,7 +176,7 @@ def ridge_regression(y, tx, lambda_):
 
 def compute_ridge_gradient(y, tx, lambda_, w):
     """
-    computes gradient for ridge regression
+    Computes gradient for ridge regression
     
     Input:
     y: prediction variable
@@ -196,7 +191,7 @@ def compute_ridge_gradient(y, tx, lambda_, w):
     return grad + 2*lambda_*w
             
 def sigmoid(z):
-    """computes sigmoid function of z"""
+    """Computes sigmoid function of z"""
     return 1.0 / (1 + np.exp(-z))
 
 
@@ -227,7 +222,7 @@ def cross_entropy_loss(y, tx, w):
     
 def cross_entropy_gradient(y, tx, w):
     """
-    computes gradient for cross entropy loss
+    Computes gradient for cross entropy loss
     
     Input:
     y: prediction variable
@@ -259,7 +254,7 @@ def regularized_cross_entropy_loss(y, tx, w, lambda_):
 
 def regularized_cross_entropy_gradient(y, tx, w, lambda_):
     """
-    computes gradient for cross entropy loss
+    Computes gradient for cross entropy loss
     
     Input:
     y: prediction variable
@@ -280,8 +275,8 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, batch_size=1, num_ba
     Input:
     y: prediction variable
     tx: data
-    initial_w: initial weights used
-    max_iters: Number of iterations after which training is stopped
+    initial_w: initial weights
+    max_iters: number of iterations after which training is stopped
     gamma: step size for gradient descent
     batch_size: size of batches (size of tx for gradient descent)
     num_batches: number of batches to compute out of tx
@@ -297,9 +292,6 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, batch_size=1, num_ba
             w = w - gamma * gr
             
         loss = cross_entropy_loss(y, tx, w)
-            
-#        print("SGD ({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-#              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return (w, loss)
 
 
@@ -312,7 +304,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, batch_s
     tx: data
     lambda_: regularization parameter
     initial_w: initial weights used
-    max_iters: Number of iterations after which training is stopped
+    max_iters: number of iterations after which training is stopped
     gamma: step size for gradient descent
     batch_size: size of batches (size of tx for gradient descent)
     num_batches: number of batches to compute out of tx
@@ -328,7 +320,4 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, batch_s
             w = w - gamma * gr
             
         loss = regularized_cross_entropy_loss(y, tx, w, lambda_)
-            
-#        print("SGD({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-#              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return (w, loss)

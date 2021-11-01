@@ -160,6 +160,7 @@ def k_fold_cross_validation(y, X, k_fold, lambdas, degrees, max_iters, batch_siz
     accs_train = np.zeros((len(degrees), len(lambdas)))
     accs_test = np.zeros((len(degrees), len(lambdas)))
 
+
     all_preds = {}
     all_labels = {}
     for id_degree, degree in enumerate(degrees):
@@ -192,10 +193,10 @@ def k_fold_cross_validation(y, X, k_fold, lambdas, degrees, max_iters, batch_siz
             if(verbose):
                 print(f"Degree: {degree:2}, Lambda: {lambda_:6}: Train: {cur_acc_train.mean():.4f} +- {cur_acc_train.std():.4f}, Test: {cur_acc_test.mean():.4f} +- {cur_acc_test.std():.4f}")
 
-        id_degree, id_lambda = np.unravel_index(np.argmax(accs_test), accs_test.shape)
-        best_degree, best_lambda = degrees[id_degree], lambdas[id_lambda]
-        best_accuracy = np.max(accs_test)
+    id_degree, id_lambda = np.unravel_index(np.argmax(accs_test), accs_test.shape)
+    best_degree, best_lambda = degrees[id_degree], lambdas[id_lambda]
+    best_accuracy = np.max(accs_test)
 
-        best_preds = all_preds[(best_degree, best_lambda)]                    
-        best_labels = all_labels[(best_degree, best_lambda)]
-        return best_accuracy, best_degree, best_lambda, best_preds, best_labels
+    best_preds = all_preds[(best_degree, best_lambda)]                    
+    best_labels = all_labels[(best_degree, best_lambda)]
+    return best_accuracy, best_degree, best_lambda, best_preds, best_labels
