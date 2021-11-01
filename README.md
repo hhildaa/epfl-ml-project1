@@ -12,10 +12,10 @@ In this project, our task was to apply basic machine learning techniques to CERN
 - Running the code
 
 ### Technology requirements
-For working with the code, the following technologies are required:
-- Python ???
-- Numpy ???
-- Matplotlib
+We executed and tested our code on the following libraries and resp. versions:
+- Python 3.8
+- Numpy 1.21.2
+- Matplotlib 3.4.3
 
 We were not allowed to use any other external libraries. 
 
@@ -42,7 +42,13 @@ python run.py --verbose --feature_expansion --remove_outliers --split_jet --algo
 The terms mean the following:
 - verbose: allows detailed logs
 - feature_expansion: allows adding additional features
-- remove_outliers: allows outlier removing
+- bound_outliers: allows outlier bounding
 - split_jet: allows splitting data according to jet number
-- algorithm: here you can choose the type of the used algorithm
+- algorithm: here you can choose the type of the used algorithm (one of `['reg_logistic', 'logistic', 'least_squares_GD', 'least_squares_SGD']`)
+- output_file: add the name of the file to save the output to
+- impute_median: impute the median for missing values
+- k_folds: change the number of k-folds for cross-validation
+- max_iters: change the number of iterations in (stochastic) gradient descent
+- batch_size: change the batch size for stochastic gradient descent
+- gamma: change the learning rate for (stochastic) gradient descent
 
