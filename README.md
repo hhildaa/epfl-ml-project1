@@ -3,7 +3,7 @@
 ###
 
 ### Description
-In this project, our task was to apply basic machine learning techniques to CERN particle accelerator data. The goal of the project was to recreate the process of finding Higgs particles. Our best approach was regularized logistic regression with splitting on number of the jets, feature expansion, median imputing and outlier bounding. We could achive 0.831% with this approach on the AIcrowd platform of this challenge (https://www.aicrowd.com/challenges/epfl-machine-learning-higgs/leaderboards). This project was a part of our Machine Learning Course at EPFL in 2021 Fall semester.
+In this project, our task was to apply basic machine learning techniques to CERN particle accelerator data. The goal of the project was to recreate the process of finding Higgs particles. Our best approach was regularized logistic regression with splitting on number of the jets, feature expansion, median imputing and outlier bounding. We could achive 83.1% with this approach on the AIcrowd platform of this challenge (https://www.aicrowd.com/challenges/epfl-machine-learning-higgs/leaderboards). This project was a part of our Machine Learning Course at EPFL in 2021 Fall semester.
 
 ### Table of contents
 - Technology requirements
